@@ -1,9 +1,7 @@
 import * as express from "express";
-import {Connection, createConnection} from "typeorm";
+import {createConnection} from "typeorm";
 import {User} from "./entity/User";
 // import "reflect-metadata";
-
-
 
 const app = express();
 const start = async () =>{
@@ -26,18 +24,17 @@ const start = async () =>{
     app.listen(3001, () => {
         console.log("SERVER RUNNING ON PORT 3001..");
       });
-      console.log(await createUser(connection))
-
+      const repo = connection.getRepository(User)
+      const user  = repo.create({
+        age: 20,
+        firstName: 'bob',
+        lastName: 'Jr',
+      })
+      await repo.save(user)
+      const users = await repo.find({})
+      console.log(users)
   }
 )
-}
-const createUser = async(connection:Connection):Promise<User>=>{
-   const user = new User()
-   user.age  = 7 
-   user.firstName = 'bob'
-   user.lastName  = 'Jr'
-   await connection.manager.save(user);
-   return user
 }
 start().catch(error=> console.log(error))
 // createConnection().then(async connection => {
